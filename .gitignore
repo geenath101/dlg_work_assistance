@@ -1,0 +1,36 @@
+# ── Go ─────────────────────────────────────────────────────────────────────────
+backend/dist/
+backend/*.exe
+backend/*.test
+backend/coverage.out
+
+# ── Node / Web ─────────────────────────────────────────────────────────────────
+web/node_modules/
+web/dist/
+web/.env.local
+web/.env.*.local
+
+# ── Terraform ──────────────────────────────────────────────────────────────────
+backend/infrastructure/terraform/.terraform/
+backend/infrastructure/terraform/.terraform.lock.hcl
+backend/infrastructure/terraform/terraform.tfstate
+backend/infrastructure/terraform/terraform.tfstate.backup
+backend/infrastructure/terraform/*.tfvars
+!backend/infrastructure/terraform/terraform.tfvars.example
+
+# ── Environment / Secrets ──────────────────────────────────────────────────────
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+
+# ── OS ─────────────────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+
+# ── IDE ────────────────────────────────────────────────────────────────────────
+.idea/
+.vscode/
+*.swp
+*.swo

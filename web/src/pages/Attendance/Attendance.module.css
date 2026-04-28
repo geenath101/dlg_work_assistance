@@ -1,0 +1,113 @@
+.container {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.header h2 { margin: 0; font-size: 1.1rem; color: #1e293b; }
+
+.tabs { display: flex; gap: 0.25rem; }
+
+.tab, .tabActive {
+  padding: 0.4rem 0.9rem;
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.tab { background: #f8fafc; color: #64748b; }
+
+.tabActive { background: #3b82f6; color: #fff; border-color: #3b82f6; }
+
+.formCard {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 1.5rem;
+  max-width: 480px;
+}
+
+.formCard form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.formCard label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.8rem;
+  color: #475569;
+  font-weight: 500;
+}
+
+.formCard input, .formCard select {
+  padding: 0.45rem 0.6rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  outline: none;
+}
+
+.formCard input:focus, .formCard select:focus { border-color: #3b82f6; }
+
+.locationRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.locateBtn {
+  background: #f0fdf4;
+  color: #16a34a;
+  border: 1px solid #bbf7d0;
+  border-radius: 6px;
+  padding: 0.45rem;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.locateBtn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.submitBtn {
+  background: #3b82f6;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.55rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.submitBtn:hover { background: #2563eb; }
+
+.result {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 1rem;
+  max-width: 480px;
+}
+
+.result h4 { margin: 0 0 0.5rem; font-size: 0.85rem; color: #475569; }
+
+.result pre {
+  margin: 0;
+  font-size: 0.75rem;
+  color: #334155;
+  white-space: pre-wrap;
+  word-break: break-all;
+}

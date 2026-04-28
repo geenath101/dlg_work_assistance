@@ -1,0 +1,1 @@
+Schema & Backend Core: Set up the Go project structure, PostgreSQL schema, and AWS infrastructure (CDK or Terraform).
