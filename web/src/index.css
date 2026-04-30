@@ -1,11 +1,5 @@
-*, *::before, *::after { box-sizing: border-box; }
+/* Carbon Design System owns base reset, typography, and colour tokens. */
 
-body {
-  margin: 0;
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  background: #f1f5f9;
-  color: #0f172a;
-  -webkit-font-smoothing: antialiased;
+#root {
+  height: 100vh;
 }
-
-#root { height: 100vh; }

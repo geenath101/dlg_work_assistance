@@ -1,60 +1,74 @@
-.shell {
-  display: flex;
-  height: 100vh;
-  overflow: hidden;
-  font-family: 'Inter', system-ui, sans-serif;
-  background: #f1f5f9;
-}
+/*
+ * Three-pane layout
+ * ──────────────────────────────────────────────────────────────────
+ * Pane 1 │ Left nav  — Carbon SideNav (fixed, 16 rem wide)
+ * Pane 2 │ Content   — pageArea  (flex: 1, scrolls independently)
+ * Pane 3 │ Detail    — detailPanel (bottom, max 40 vh, slides up)
+ *
+ * Carbon uses `margin-left: 256px` (via .cds--side-nav ~ .cds--content)
+ * for the SideNav offset, so zeroing the padding is safe.
+ * ──────────────────────────────────────────────────────────────────
+ */
 
-.nav {
-  width: 200px;
-  flex-shrink: 0;
-  background: #0f172a;
+/* Override Carbon Content to act as the full-height column host */
+:global(.cds--content) {
+  padding: 0;
+  margin-top: 3rem;          /* clear the fixed Header */
+  height: calc(100vh - 3rem);
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  padding: 1rem 0;
+  overflow: hidden;
+  min-height: unset;
 }
 
-.brand {
-  padding: 0.5rem 1.25rem 1rem;
-  font-size: 1rem;
-  font-weight: 700;
-  color: #f8fafc;
-  letter-spacing: -0.02em;
+/* Inner column that owns both the page area and the detail panel */
+.contentInner {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
 }
 
-.nav ul {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.link {
-  display: block;
-  padding: 0.6rem 1.25rem;
-  color: #94a3b8;
-  text-decoration: none;
-  font-size: 0.875rem;
-  font-weight: 500;
-  border-left: 3px solid transparent;
-  transition: background 0.12s, color 0.12s;
-}
-
-.link:hover {
-  background: #1e293b;
-  color: #f8fafc;
-}
-
-.active {
-  background: #1e293b;
-  color: #f8fafc;
-  border-left-color: #3b82f6;
-}
-
-.main {
+/* Pane 2 — the main page content */
+.pageArea {
   flex: 1;
   overflow: hidden;
+  min-height: 0;            /* required so flex child can shrink */
+}
+
+/* ────────────────────────────────────────────────────────────── */
+/* Pane 3 — bottom detail panel                                  */
+/* ────────────────────────────────────────────────────────────── */
+.detailPanel {
+  flex-shrink: 0;
+  min-height: 160px;
+  max-height: 40vh;          /* never reaches mid-screen */
+  background: var(--cds-layer-01);
+  border-top: 2px solid var(--cds-border-interactive);
   display: flex;
   flex-direction: column;
+  overflow: hidden;
+  animation: slideUp 0.18s ease;
+}
+
+@keyframes slideUp {
+  from { max-height: 0; opacity: 0; }
+  to   { max-height: 40vh; opacity: 1; }
+}
+
+.detailPanelHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0.75rem 0.5rem 1.5rem;
+  background: var(--cds-layer-02);
+  border-bottom: 1px solid var(--cds-border-subtle-01);
+  flex-shrink: 0;
+}
+
+.detailPanelBody {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem 1.5rem;
 }
