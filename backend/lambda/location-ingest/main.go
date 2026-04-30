@@ -1,5 +1,4 @@
 package locationingest
-package main
 
 import (
 	"context"

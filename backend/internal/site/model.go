@@ -1,5 +1,4 @@
 package site
-package site
 
 import "time"
 

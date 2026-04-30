@@ -1,5 +1,4 @@
 package employee
-package main
 
 import (
 	"context"

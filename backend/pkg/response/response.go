@@ -1,5 +1,4 @@
 package response
-package response
 
 import (
 	"encoding/json"

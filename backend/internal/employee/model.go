@@ -1,5 +1,4 @@
 package employee
-package employee
 
 import "time"
 

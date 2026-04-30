@@ -5,7 +5,7 @@ services:
     image: postgres:16-alpine
     restart: unless-stopped
     environment:
-      POSTGRES_DB:       dimeo
+      POSTGRES_DB:       work_assistance
       POSTGRES_USER:     postgres
       POSTGRES_PASSWORD: postgres
     ports:
@@ -14,9 +14,39 @@ services:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 5s
+      interval: 10s
       timeout: 5s
       retries: 5
 
+  pgadmin:
+    image: dpage/pgadmin4:9.14.0
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL:    admin@local.dev
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  # Run with:  docker compose --profile migrate up migrate
+  # Or use the Makefile targets:  make migrate/up  /  make migrate/down
+ # migrate:
+#  image: migrate/migrate:v4.17.1
+#  profiles: [migrate]
+#  depends_on:
+#    postgres:
+#      condition: service_healthy
+#  volumes:
+#    - ./migrations:/migrations:ro
+#  command:
+#    - "-path=/migrations"
+#    - "-database=postgres://postgres:postgres@postgres:5432/work_assistance?sslmode=disable"
+#    - "up"
+
 volumes:
   postgres_data:
+  pgadmin_data:

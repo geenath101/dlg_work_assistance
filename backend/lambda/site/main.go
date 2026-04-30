@@ -1,5 +1,4 @@
 package site
-package main
 
 import (
 	"context"

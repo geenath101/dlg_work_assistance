@@ -1,5 +1,4 @@
 package attendance
-package attendance
 
 import "time"
 

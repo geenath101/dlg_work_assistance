@@ -1,5 +1,4 @@
 package geo
-package geo
 
 import "math"
 
