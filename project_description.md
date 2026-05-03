@@ -29,10 +29,13 @@ then aftet selecting the sites in left navigation, the content pannel in right s
 2. EmployeeAssignment
 3. SupplyManagement
 
-and default selections should be location setup
-in locationsetup . 
+and default selections should be location setupin locationsetup . 
 -list available sites with details in a tabular format. 
-- add a button in add a site , there user should be present with a map with a seach bar so user chan search the location of the site and add it
+-add a button in add a site , there user should be present with a map with a seach bar so user chan search the location of the site and add it
+
+
+MVP TODO:
+-Implement the site search featiurea and create site feature with location cooridnates.
 
 
 
