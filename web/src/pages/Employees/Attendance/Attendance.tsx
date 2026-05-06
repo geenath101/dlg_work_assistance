@@ -16,9 +16,9 @@ import {
   Stack,
 } from '@carbon/react';
 import { Location, Login, Logout } from '@carbon/icons-react';
-import { useDetailPanel } from '../../context/DetailPanelContext';
-import { getEmployees, getSites, signIn, signOut } from '../../api/client';
-import type { Employee, Site, AttendanceLog } from '../../types';
+import { useDetailPanel } from '../../../context/DetailPanelContext';
+import { getEmployees, getSites, signIn, signOut } from '../../../api/client';
+import type { Employee, Site, AttendanceLog } from '../../../types';
 import styles from './Attendance.module.css';
 
 /** Content shown in the bottom detail panel after a successful sign-in/out */
@@ -68,8 +68,9 @@ export default function Attendance() {
       const [emps, sts] = await Promise.all([getEmployees(), getSites()]);
       setEmployees(emps ?? []);
       setSites(sts ?? []);
-    } catch {
-      toast.error('Failed to load data');
+    } catch (err) {
+      // toast.error('Failed to load data');
+      console.error('Failed to load data', err);
     } finally {
       setLoading(false);
     }
@@ -80,7 +81,8 @@ export default function Attendance() {
   const useCurrentLocation = (onSuccess: (lat: number, lon: number) => void) => {
     setLocating(true);
     if (!navigator.geolocation) {
-      toast.error('Geolocation not supported by this browser');
+      // toast.error('Geolocation not supported by this browser');
+      console.error('Geolocation not supported by this browser');
       setLocating(false);
       return;
     }
@@ -89,8 +91,9 @@ export default function Attendance() {
         onSuccess(pos.coords.latitude, pos.coords.longitude);
         setLocating(false);
       },
-      () => {
-        toast.error('Could not get location. Please enter manually.');
+      (err) => {
+        // toast.error('Could not get location. Please enter manually.');
+        console.error('Could not get location. Please enter manually.', err);
         setLocating(false);
       },
       { enableHighAccuracy: true, timeout: 10000 },
@@ -113,7 +116,8 @@ export default function Attendance() {
       const msg =
         (err as { response?: { data?: { error?: string } } })?.response?.data?.error ??
         'Sign-in failed';
-      toast.error(msg);
+      // toast.error(msg);
+      console.error('Sign-in error:', msg, err);
     }
   };
 
@@ -132,7 +136,8 @@ export default function Attendance() {
       const msg =
         (err as { response?: { data?: { error?: string } } })?.response?.data?.error ??
         'Sign-out failed';
-      toast.error(msg);
+      // toast.error(msg);
+      console.error('Sign-out error:', msg, err);
     }
   };
 
@@ -205,7 +210,7 @@ export default function Attendance() {
                     </div>
                     <Button
                       kind="tertiary"
-                      size="sm"
+                      size="md"
                       renderIcon={Location}
                       type="button"
                       disabled={locating}
@@ -220,7 +225,7 @@ export default function Attendance() {
                     </Button>
                   </FormGroup>
 
-                  <Button type="submit" renderIcon={Login}>Sign In</Button>
+                  <Button type="submit" size="md" renderIcon={Login}>Sign In</Button>
                 </Stack>
               </form>
             </Tile>
@@ -265,7 +270,7 @@ export default function Attendance() {
                     </div>
                     <Button
                       kind="tertiary"
-                      size="sm"
+                      size="md"
                       renderIcon={Location}
                       type="button"
                       disabled={locating}
@@ -280,7 +285,7 @@ export default function Attendance() {
                     </Button>
                   </FormGroup>
 
-                  <Button type="submit" renderIcon={Logout} kind="secondary">Sign Out</Button>
+                  <Button type="submit" size="md" renderIcon={Logout} kind="secondary">Sign Out</Button>
                 </Stack>
               </form>
             </Tile>

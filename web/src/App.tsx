@@ -3,7 +3,7 @@ import { Toaster } from 'react-hot-toast';
 import Layout from './components/Layout/Layout';
 import Sites from './pages/Sites/Sites';
 import Employees from './pages/Employees/Employees';
-import Attendance from './pages/Attendance/Attendance';
+import Attendance from './pages/Employees/Attendance/Attendance';
 
 function App() {
   return (
@@ -14,7 +14,7 @@ function App() {
           <Route index element={<Navigate to="/sites" replace />} />
           <Route path="sites" element={<Sites />} />
           <Route path="employees" element={<Employees />} />
-          <Route path="attendance" element={<Attendance />} />
+          {/* <Route path="attendance" element={<Attendance />} /> */}
         </Route>
       </Routes>
     </>

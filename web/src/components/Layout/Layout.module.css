@@ -10,6 +10,16 @@
  * ──────────────────────────────────────────────────────────────────
  */
 
+/* SideNav — g10 background (#f4f4f4) with a right border to separate from content */
+:global(.cds--side-nav) {
+  background-color: var(--cds-layer-01, #f4f4f4);
+  border-right: 1px solid var(--cds-border-subtle-01, #e0e0e0);
+}
+
+:global(.cds--side-nav__link:hover) {
+  background-color: var(--cds-layer-hover-01, #e8e8e8);
+}
+
 /* Override Carbon Content to act as the full-height column host */
 :global(.cds--content) {
   padding: 0;
@@ -19,6 +29,7 @@
   flex-direction: column;
   overflow: hidden;
   min-height: unset;
+  background-color: var(--cds-background, #ffffff);
 }
 
 /* Inner column that owns both the page area and the detail panel */

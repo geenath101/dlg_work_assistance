@@ -26,7 +26,7 @@ interface NavItem {
 const navItems: NavItem[] = [
   { to: '/sites',      label: 'Sites',      Icon: Location },
   { to: '/employees',  label: 'Employees',  Icon: UserMultiple },
-  { to: '/attendance', label: 'Attendance', Icon: CheckmarkOutline },
+  // { to: '/attendance', label: 'Attendance', Icon: CheckmarkOutline },
 ];
 
 /** Inner shell — rendered inside the DetailPanelProvider so it can use the context */
@@ -74,32 +74,34 @@ function LayoutShell() {
       </SideNav>
 
       <Content>
-        {/* contentInner is the flex-column host for pageArea + detailPanel */}
-        <div className={styles.contentInner}>
-          <div className={styles.pageArea}>
-            <Outlet />
-          </div>
-
-          {/* Bottom detail panel — only renders when an item is selected */}
-          {panel && (
-            <div className={styles.detailPanel}>
-              <div className={styles.detailPanelHeader}>
-                <h5 className="cds--type-heading-03">{panel.title}</h5>
-                <Button
-                  kind="ghost"
-                  size="sm"
-                  hasIconOnly
-                  renderIcon={Close}
-                  iconDescription="Close panel"
-                  onClick={closePanel}
-                />
-              </div>
-              <div className={styles.detailPanelBody}>
-                {panel.content}
-              </div>
+        <Theme theme="white">
+          {/* contentInner is the flex-column host for pageArea + detailPanel */}
+          <div className={styles.contentInner}>
+            <div className={styles.pageArea}>
+              <Outlet />
             </div>
-          )}
-        </div>
+
+            {/* Bottom detail panel — only renders when an item is selected */}
+            {panel && (
+              <div className={styles.detailPanel}>
+                <div className={styles.detailPanelHeader}>
+                  <h5 className="cds--type-heading-03">{panel.title}</h5>
+                  <Button
+                    kind="ghost"
+                    size="sm"
+                    hasIconOnly
+                    renderIcon={Close}
+                    iconDescription="Close panel"
+                    onClick={closePanel}
+                  />
+                </div>
+                <div className={styles.detailPanelBody}>
+                  {panel.content}
+                </div>
+              </div>
+            )}
+          </div>
+        </Theme>
       </Content>
     </>
   );

@@ -16,7 +16,8 @@ import styles from '../Sites.module.css';
 // ── Types ─────────────────────────────────────────────────────────────────────
 
 interface PendingPin { lat: number; lng: number; }
-interface SiteForm { name: string; address: string; proximity_radius_m: number; }
+interface SiteForm { name: string; address: string; proximity_radius_m: number; lat:number;lng:number}
+const PROXIMITY_RADIUS = 100
 
 const MAPS_API_KEY   = import.meta.env.VITE_GOOGLE_MAPS_API_KEY as string;
 
@@ -148,15 +149,17 @@ export default function LocationSetupTab() {
   const [showModal,  setShowModal]  = useState(false);
   const [pendingPin, setPendingPin] = useState<PendingPin | null>(null);
   const [mapCenter,  setMapCenter]  = useState<{ lat: number; lng: number } | null>(null);
-  const [form,       setForm]       = useState<SiteForm>({ name: '', address: '', proximity_radius_m: 100 });
+  const [form,       setForm]       =
+   useState<SiteForm>({ name: '',address: '',proximity_radius_m: PROXIMITY_RADIUS,lat:DEFAULT_CENTER.lat,lng:DEFAULT_CENTER.lng });
   const [saving,     setSaving]     = useState(false);
 
   const loadSites = useCallback(async () => {
     try {
       const data = await getSites();
       setSites(data ?? []);
-    } catch {
-      toast.error('Failed to load sites');
+    } catch( e ) {
+      //toast.error('Failed to load sites');
+      console.error("error loading sites",e)
     } finally {
       setLoading(false);
     }
@@ -170,8 +173,9 @@ export default function LocationSetupTab() {
       await deleteSite(id);
       toast.success('Site deleted');
       loadSites();
-    } catch {
-      toast.error('Failed to delete site');
+    } catch (err) {
+      // toast.error('Failed to delete site');
+      console.error('Failed to delete site', err);
     }
   };
 
@@ -190,12 +194,12 @@ export default function LocationSetupTab() {
     if (!e?.detail?.latLng) return;
     const { lat, lng } = e.detail.latLng;
     setPendingPin({ lat, lng });
-    setForm((f) => ({ ...f, address: `${lat.toFixed(5)}, ${lng.toFixed(5)}` }));
+    setForm((f) => ({...f,lat:lat,lng:lng}));
   };
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!pendingPin) { toast.error('Pin a location on the map first'); return; }
+    if (!pendingPin) { /* toast.error('Pin a location on the map first'); */ console.error('Pin a location on the map first'); return; }
     setSaving(true);
     try {
       await createSite({
@@ -208,10 +212,11 @@ export default function LocationSetupTab() {
       toast.success('Site created');
       setPendingPin(null);
       setShowModal(false);
-      setForm({ name: '', address: '', proximity_radius_m: 100 });
+      //setForm({ name: '', address: '', proximity_radius_m: 100 });
       loadSites();
-    } catch {
-      toast.error('Failed to create site');
+    } catch (err) {
+      // toast.error('Failed to create site');
+      console.error('Failed to create site', err);
     } finally {
       setSaving(false);
     }
@@ -221,7 +226,7 @@ export default function LocationSetupTab() {
     setShowModal(true);
     setPendingPin(null);
     setMapCenter(null);
-    setForm({ name: '', address: '', proximity_radius_m: 100 });
+   // setForm({ name: '', address: '', proximity_radius_m: 100 });
   };
 
   const closeAddModal = () => {
@@ -235,7 +240,7 @@ export default function LocationSetupTab() {
       <div className={styles.locationSetup}>
         <div className={styles.locationSetupHeader}>
           <h4 className="cds--type-heading-04">Sites</h4>
-          <Button renderIcon={Add} size="sm" onClick={openAddModal}>
+          <Button renderIcon={Add} size="md" onClick={openAddModal}>
             Add Site
           </Button>
         </div>
@@ -338,7 +343,7 @@ export default function LocationSetupTab() {
                   placeholder="Search map or click to set"
                   helperText="Auto-filled from map search; edit if needed"
                 />
-                <NumberInput
+                {/* <NumberInput
                   id="site-radius"
                   label="Check-in radius (m)"
                   min={10}
@@ -347,12 +352,12 @@ export default function LocationSetupTab() {
                   onChange={(_e: unknown, { value }: { value: string | number }) =>
                     setForm((f) => ({ ...f, proximity_radius_m: Number(value) }))
                   }
-                />
+                /> */}
                 <div className={styles.modalActions}>
-                  <Button type="submit" renderIcon={Add} disabled={saving} size="sm">
+                  <Button type="submit" renderIcon={Add} disabled={saving} size="md">
                     {saving ? 'Saving…' : 'Save Site'}
                   </Button>
-                  <Button kind="secondary" size="sm" type="button" onClick={closeAddModal}>
+                  <Button kind="secondary" size="md" type="button" onClick={closeAddModal}>
                     Cancel
                   </Button>
                 </div>
