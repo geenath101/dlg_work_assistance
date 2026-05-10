@@ -1,5 +1,6 @@
 # ── Go ─────────────────────────────────────────────────────────────────────────
 backend/dist/
+backend/bin/
 backend/*.exe
 backend/*.test
 backend/coverage.out
@@ -11,12 +12,13 @@ web/.env.local
 web/.env.*.local
 
 # ── Terraform ──────────────────────────────────────────────────────────────────
-backend/infrastructure/terraform/.terraform/
-backend/infrastructure/terraform/.terraform.lock.hcl
-backend/infrastructure/terraform/terraform.tfstate
-backend/infrastructure/terraform/terraform.tfstate.backup
-backend/infrastructure/terraform/*.tfvars
-!backend/infrastructure/terraform/terraform.tfvars.example
+.terraform/
+#backend/infrastructure/terraform/.terraform/*
+#backend/infrastructure/terraform/.terraform.lock.hcl
+#backend/infrastructure/terraform/terraform.tfstate
+#backend/infrastructure/terraform/terraform.tfstate.backup
+#backend/infrastructure/terraform/*.tfvars
+#!backend/infrastructure/terraform/terraform.tfvars.example
 
 # ── Environment / Secrets ──────────────────────────────────────────────────────
 .env

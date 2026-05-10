@@ -16,8 +16,9 @@ func NewPostgresDB() (*sql.DB, error) {
 		getEnv("DB_HOST", "localhost"),
 		getEnv("DB_PORT", "5432"),
 		getEnv("DB_USER", "postgres"),
+		// testing password , should be removed
 		getEnv("DB_PASSWORD", ""),
-		getEnv("DB_NAME", "dimeo"),
+		getEnv("DB_NAME", "workassistance"),
 		getEnv("DB_SSLMODE", "disable"),
 	)
 

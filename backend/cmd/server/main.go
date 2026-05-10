@@ -46,6 +46,8 @@ func adapt(resource string, h lambdaFunc) http.HandlerFunc {
 	paramNames := routeParamNames(resource)
 
 	return func(w http.ResponseWriter, r *http.Request) {
+		log.Printf("--> %s %s", r.Method, r.URL.RequestURI())
+
 		body, _ := io.ReadAll(r.Body)
 
 		pathParams := make(map[string]string, len(paramNames))
@@ -72,9 +74,11 @@ func adapt(resource string, h lambdaFunc) http.HandlerFunc {
 
 		resp, err := h(r.Context(), req)
 		if err != nil {
+			log.Printf("<-- %s %s  ERROR: %v", r.Method, r.URL.RequestURI(), err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
+		log.Printf("<-- %s %s  %d", r.Method, r.URL.RequestURI(), resp.StatusCode)
 
 		for k, v := range resp.Headers {
 			w.Header().Set(k, v)
