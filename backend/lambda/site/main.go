@@ -1,14 +1,14 @@
-package site
+package main
 
 import (
 	"context"
 	"log"
 
-	"github.com/aws/aws-lambda-go/events"
-	"github.com/aws/aws-lambda-go/lambda"
-
 	"dimeo/work-assistance/internal/site"
 	"dimeo/work-assistance/pkg/database"
+
+	"github.com/aws/aws-lambda-go/events"
+	"github.com/aws/aws-lambda-go/lambda"
 )
 
 var handler *site.Handler
@@ -18,6 +18,7 @@ func init() {
 	if err != nil {
 		log.Fatalf("connecting to database: %v", err)
 	}
+	log.Print("Initialized the database ....")
 	repo := site.NewRepository(db)
 	svc := site.NewService(repo)
 	handler = site.NewHandler(svc)
