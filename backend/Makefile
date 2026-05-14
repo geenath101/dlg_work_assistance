@@ -2,6 +2,7 @@
 GOCMD      := go
 GOBUILD    := $(GOCMD) build
 BINARY_DIR := bin
+INFRA_DIR  := infrastructure
 DIST_DIR   := dist
 LAMBDAS    := employee site attendance location-ingest
 MIGRATE    := go run github.com/golang-migrate/migrate/v4/cmd/migrate@v4.19.1
@@ -14,7 +15,7 @@ LAMBDA_FUNCTION_PREFIX ?= workassistance
 LAMBDA_HANDLER ?= bootstrap
 LAMBDA_RUNTIME ?= provided.al2023
 LAMBDA_ARCH ?= arm64
-LAMBDA_ROLE_ARN ?=
+LAMBDA_ROLE_ARN ?= arn:aws:iam::789343097926:role/lambda_execution_role_for_workassistance
 
 # Database connection – override any of these via environment or make invocation
 # e.g.  make migrate/up DB_PASSWORD=secret
@@ -40,74 +41,74 @@ all: build
 
 # ─── Lambda Builds ────────────────────────────────────────────────────────────
 ## build          – compile all lambda binaries for Linux/amd64 (AWS Lambda)
-build:
-	@mkdir -p $(BINARY_DIR)
-	@for svc in $(LAMBDAS); do \
-		echo "  → lambda/$$svc"; \
-		GOOS=linux GOARCH=amd64 CGO_ENABLED=0 \
-		$(GOBUILD) -ldflags="-s -w" -o $(BINARY_DIR)/$$svc/bootstrap ./lambda/$$svc/...; \
-	done
-	@echo "Lambdas written to $(BINARY_DIR)/"
+#build:
+#	@mkdir -p $(BINARY_DIR)
+#	@for svc in $(LAMBDAS); do \
+#		echo "  → lambda/$$svc"; \
+#		GOOS=linux GOARCH=amd64 CGO_ENABLED=0 \
+#		$(GOBUILD) -ldflags="-s -w" -o $(BINARY_DIR)/$$svc/bootstrap ./lambda/$$svc/...; \
+#	done
+#	@echo "Lambdas written to $(BINARY_DIR)/"
 
 ## build/<svc>    – compile a single lambda  (e.g. make build/employee)
 build/%:
 	@mkdir -p $(BINARY_DIR)
-	GOOS=linux GOARCH=amd64 CGO_ENABLED=0 \
-	$(GOBUILD) -ldflags="-s -w" -o $(BINARY_DIR)/$*/bootstrap ./lambda/$*/...
+	GOOS=linux GOARCH=arm64 CGO_ENABLED=0 \
+	$(GOBUILD) -tags lambda.norpc -o $(BINARY_DIR)/$*/bootstrap ./lambda/$*/...
 	@echo "Built: $(BINARY_DIR)/$*/bootstrap"
 
 ## lambda/package/% – zip the contents of bin/<svc>/ into dist/<svc>.zip
-lambda/package/%:
+l/p/%:
 	@$(MAKE) build/$*
 	@mkdir -p $(DIST_DIR)
+	@cp $(INFRA_DIR)/certs/global-bundle.pem $(BINARY_DIR)/$*
 	@cd $(BINARY_DIR)/$* && zip -qr ../../$(DIST_DIR)/$*.zip .
 	@echo "Packaged: $(DIST_DIR)/$*.zip"
 
 ## lambda/create/% – create the Lambda function from dist/<svc>.zip
-lambda/create/%: lambda/package/%
-	@test -n "$(LAMBDA_ROLE_ARN)" || (echo "LAMBDA_ROLE_ARN is required for lambda/create/%"; exit 1)
+l/c/%:
+	@$(MAKE) l/p/$*
 	@function_name="$(LAMBDA_FUNCTION_PREFIX)-$*-$(LAMBDA_ENVIRONMENT)"; \
 	echo "Creating $$function_name"; \
 	$(AWS_CLI) lambda create-function \
 		--function-name "$$function_name" \
 		--runtime "$(LAMBDA_RUNTIME)" \
+	    --architectures "$(LAMBDA_ARCH)" \
 		--handler "$(LAMBDA_HANDLER)" \
-		--architectures "$(LAMBDA_ARCH)" \
 		--role "$(LAMBDA_ROLE_ARN)" \
 		--zip-file "fileb://$(DIST_DIR)/$*.zip" \
-		--publish
 
 ## lambda/update/% – update an existing Lambda function from dist/<svc>.zip
-lambda/update/%: lambda/package/%
+l/u/%: l/p/%
 	@function_name="$(LAMBDA_FUNCTION_PREFIX)-$*-$(LAMBDA_ENVIRONMENT)"; \
 	echo "Updating $$function_name"; \
 	$(AWS_CLI) lambda update-function-code \
 		--function-name "$$function_name" \
 		--zip-file "fileb://$(DIST_DIR)/$*.zip" \
-		--publish
 
-## lambda/deploy/% – create or update the Lambda function via aws lambda get-function
-lambda/deploy/%: lambda/package/%
-	@function_name="$(LAMBDA_FUNCTION_PREFIX)-$*-$(LAMBDA_ENVIRONMENT)"; \
-	if $(AWS_CLI) $(AWS_ARGS) lambda get-function --function-name "$$function_name" >/dev/null 2>&1; then \
-		echo "Updating $$function_name"; \
-		$(AWS_CLI) $(AWS_ARGS) lambda update-function-code \
-			--function-name "$$function_name" \
-			--zip-file "fileb://$(DIST_DIR)/$*.zip" \
-			--publish; \
-	else \
-		test -n "$(LAMBDA_ROLE_ARN)" || (echo "LAMBDA_ROLE_ARN is required for lambda/deploy/% when creating a new function"; exit 1); \
-		echo "Creating $$function_name"; \
-		$(AWS_CLI) $(AWS_ARGS) lambda create-function \
-			--function-name "$$function_name" \
-			--runtime "$(LAMBDA_RUNTIME)" \
-			--handler "$(LAMBDA_HANDLER)" \
-			--architectures "$(LAMBDA_ARCH)" \
-			--role "$(LAMBDA_ROLE_ARN)" \
-			--zip-file "fileb://$(DIST_DIR)/$*.zip" \
-			--publish; \
-	fi
 
+### lambda/deploy/% – create or update the Lambda function via aws lambda get-function
+#lambda/deploy/%: lambda/package/%
+#	@function_name="$(LAMBDA_FUNCTION_PREFIX)-$*-$(LAMBDA_ENVIRONMENT)"; \
+#	if $(AWS_CLI) $(AWS_ARGS) lambda get-function --function-name "$$function_name" >/dev/null 2>&1; then \
+#		echo "Updating $$function_name"; \
+#		$(AWS_CLI) $(AWS_ARGS) lambda update-function-code \
+#			--function-name "$$function_name" \
+#			--zip-file "fileb://$(DIST_DIR)/$*.zip" \
+#			--publish; \
+#	else \
+#		test -n "$(LAMBDA_ROLE_ARN)" || (echo "LAMBDA_ROLE_ARN is required for lambda/deploy/% when creating a new function"; exit 1); \
+#		echo "Creating $$function_name"; \
+#		$(AWS_CLI) $(AWS_ARGS) lambda create-function \
+#			--function-name "$$function_name" \
+#			--runtime "$(LAMBDA_RUNTIME)" \
+#			--handler "$(LAMBDA_HANDLER)" \
+#			--architectures "$(LAMBDA_ARCH)" \
+#			--role "$(LAMBDA_ROLE_ARN)" \
+#			--zip-file "fileb://$(DIST_DIR)/$*.zip" \
+#			--publish; \
+#	fi
+#
 # ─── Local Dev Server ─────────────────────────────────────────────────────────
 ## server/build   – compile the local HTTP dev server (native OS/arch)
 server/build:
